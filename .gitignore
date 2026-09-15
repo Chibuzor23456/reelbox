@@ -29,3 +29,9 @@ plan-artifact.html
 
 # Local Claude Code session state
 .claude/
+
+# PRD/spec source docs and raw brand-delivery assets at the repo root —
+# planning material, not part of the app (frontend/ has its own copies of
+# anything actually used)
+/*.md
+/*.png
