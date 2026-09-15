@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Never serve dotfiles (.env, etc.)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Internal-only folders are never directly reachable over HTTP.
+RewriteRule ^(config|lib|scripts|storage)(/|$) - [F,L]
+
+# /auth/login -> /auth/login.php, etc. — lets endpoints be called without
+# a .php extension.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L,QSA]

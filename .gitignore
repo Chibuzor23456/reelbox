@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+frontend/dist/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+api/config/local.php
+
+# Ingestion cache
+api/storage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Planning scratch
+plan-artifact.html
+
+# Local Claude Code session state
+.claude/

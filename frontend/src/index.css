@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #080808;
+  --color-surface: #121212;
+  --color-card: #1b1b1b;
+  --color-text: #ffffff;
+  --color-muted: #a1a1a1;
+  --color-border: #282828;
+  --color-primary: #e31b23;
+  --color-primary-deep: #a80f18;
+  --color-success: #2fa968;
+  --color-warning: #d9a441;
+  --color-error: #e5484d;
+
+  --font-sans: "Manrope", system-ui, sans-serif;
+}
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --bottom-nav-height: 44px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Browsers don't give <button> a pointer cursor by default (unlike <a>) —
+   without this every clickable card/control looks inert until pressed. */
+button:not(:disabled),
+[role="button"] {
+  cursor: pointer;
+}
+
+/* Responsive Design Spec section 4.2 — one tokenized gutter scale instead
+   of scattered per-page padding values. */
+.page-gutter {
+  padding-inline: max(16px, var(--safe-left)) max(16px, var(--safe-right));
+}
+@media (min-width: 360px) {
+  .page-gutter {
+    padding-inline: max(20px, var(--safe-left)) max(20px, var(--safe-right));
+  }
+}
+@media (min-width: 480px) {
+  .page-gutter {
+    padding-inline: max(24px, var(--safe-left)) max(24px, var(--safe-right));
+  }
+}
+@media (min-width: 768px) {
+  .page-gutter {
+    padding-inline: max(32px, var(--safe-left)) max(32px, var(--safe-right));
+  }
+}
+@media (min-width: 1024px) {
+  .page-gutter {
+    padding-inline: max(48px, var(--safe-left)) max(48px, var(--safe-right));
+  }
+}
+
+/* Section 31 — reduced motion is respected globally, not opted into per component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
