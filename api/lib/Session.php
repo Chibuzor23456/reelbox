@@ -34,13 +34,22 @@ function issue_session(string $userId): string
 
 function set_session_cookie(string $value, int $expires): void
 {
+    // Lax cookies are never sent on a cross-site fetch/XHR (only top-level
+    // navigations) — fine locally where frontend/API differ only by port on
+    // localhost (same site), but the moment frontend and API are on
+    // genuinely different domains in production, Lax silently drops the
+    // cookie on every API call. None (which requires Secure) is what
+    // actually works for that setup, so tie the two together instead of
+    // hardcoding one and having auth mysteriously fail after deploy.
+    $secure = env('APP_ENV', 'production') === 'production';
+
     setcookie(SESSION_COOKIE, $value, [
         'expires' => $expires,
         'path' => '/',
         'domain' => env('APP_COOKIE_DOMAIN', ''),
-        'secure' => env('APP_ENV', 'production') === 'production',
+        'secure' => $secure,
         'httponly' => true,
-        'samesite' => 'Lax',
+        'samesite' => $secure ? 'None' : 'Lax',
     ]);
 }
 
