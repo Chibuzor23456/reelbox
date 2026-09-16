@@ -214,8 +214,8 @@ export default function VideoPlayer({
           interaction the mobile player was missing entirely. */}
       {status !== 'error' && (
         <div
-          className={`pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-6 transition-opacity duration-200 ${
-            controlsVisible ? 'opacity-100' : 'opacity-0'
+          className={`pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-6 ${
+            controlsVisible ? 'opacity-100' : 'opacity-0 transition-opacity duration-200'
           }`}
         >
           {canSeek && (
@@ -247,8 +247,8 @@ export default function VideoPlayer({
       )}
 
       <div
-        className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1 bg-gradient-to-t from-black/85 to-transparent px-1 pb-1 pt-4 text-white transition-opacity duration-200 sm:px-2 ${
-          controlsVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
+        className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1 bg-gradient-to-t from-black/85 to-transparent px-1 pb-1 pt-4 text-white sm:px-2 ${
+          controlsVisible ? 'opacity-100' : 'pointer-events-none opacity-0 transition-opacity duration-200'
         }`}
       >
         {canSeek && (
