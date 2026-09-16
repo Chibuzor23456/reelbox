@@ -1,9 +1,8 @@
 RewriteEngine On
 
-# A URL like /channels or /vod matches a real directory here — without this,
-# Apache's mod_dir auto-redirects it to add a trailing slash before any PHP
-# (and therefore apply_cors()) runs, so the redirect carries no CORS headers
-# and browsers block it cross-origin even though curl doesn't care.
+# Belt-and-braces attempt at suppressing Apache's auto trailing-slash
+# redirect (some hosts don't grant .htaccess override for this directive,
+# which is exactly why the rule below exists as the real fix).
 DirectorySlash Off
 
 # Never serve dotfiles (.env, etc.)
@@ -13,6 +12,17 @@ DirectorySlash Off
 
 # Internal-only folders are never directly reachable over HTTP.
 RewriteRule ^(config|lib|scripts|storage)(/|$) - [F,L]
+
+# A URL like /channels matches a real directory (channels/), so — DirectorySlash
+# aside — Apache's mod_dir would otherwise auto-redirect it to add a trailing
+# slash before any PHP (and therefore apply_cors()) runs; that redirect
+# carries no CORS headers, so browsers block it cross-origin even though
+# curl -L happily follows it and hides the problem. Rewriting straight to
+# the directory's index.php via mod_rewrite runs first and resolves the
+# request to a specific file, so mod_dir never gets involved at all.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.php -f
+RewriteRule ^(.*[^/])$ $1/index.php [L,QSA]
 
 # /auth/login -> /auth/login.php, etc. — lets endpoints be called without
 # a .php extension.
