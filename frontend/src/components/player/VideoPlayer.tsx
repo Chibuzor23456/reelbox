@@ -49,6 +49,7 @@ export default function VideoPlayer({
   onProgress,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { status, errorMessage, retry } = useHlsPlayer(videoRef, src, { startAt, onProgress })
   const { airPlayAvailable, castAvailable, showAirPlayPicker, startCasting } = useCasting(videoRef, src, title)
@@ -146,12 +147,16 @@ export default function VideoPlayer({
   }
 
   function toggleFullscreen() {
-    const video = videoRef.current
-    if (!video) return
+    // Fullscreening the bare <video> instead of the container shows the
+    // browser's own native player chrome, not this component's controls —
+    // which is exactly why fullscreen "worked" while every custom control
+    // (including the tap-to-reveal handling) was actually bypassed there.
+    const container = containerRef.current
+    if (!container) return
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {})
     } else {
-      video.requestFullscreen().catch(() => {})
+      container.requestFullscreen().catch(() => {})
     }
     wake()
   }
@@ -171,18 +176,23 @@ export default function VideoPlayer({
 
   return (
     <div
+      ref={containerRef}
       className="group relative aspect-video w-full select-none overflow-hidden rounded-lg bg-black"
       onMouseMove={wake}
     >
       {/* eslint-disable-next-line react/no-unknown-property */}
       <video ref={videoRef} className="h-full w-full" playsInline x-webkit-airplay="allow" />
 
-      {/* Tap target for reveal/hide — sits above the video, below every control. */}
+      {/* Tap target for reveal/hide — sits above the video, below every control.
+          touch-action: manipulation kills the ~300ms tap delay / double-tap-zoom
+          gesture detection mobile browsers otherwise do on this element, which
+          was the actual cause of taps needing to land repeatedly before
+          registering. */}
       <button
         type="button"
         aria-label={controlsVisible ? 'Hide controls' : 'Show controls'}
         onClick={handleVideoTap}
-        className="absolute inset-0 z-[5] cursor-default"
+        className="absolute inset-0 z-[5] cursor-default touch-manipulation"
       />
 
       {live && status !== 'error' && (
