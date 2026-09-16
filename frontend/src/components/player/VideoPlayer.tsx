@@ -93,9 +93,16 @@ export default function VideoPlayer({
   }
 
   function handleVideoTap() {
-    if (status !== 'playing') {
-      // Most likely reason nothing is playing yet is a blocked autoplay —
-      // this tap is a fresh user gesture, so retry play from right here.
+    // Checks the real <video> element, not the React `status` string — status
+    // briefly reads 'loading' during ordinary live-stream buffering blips
+    // even while the video is still actually playing, and toggling off
+    // `status !== 'playing'` there would call togglePlay() and pause a
+    // perfectly fine live stream just because someone tapped to see the
+    // controls (showing up as a confusing delay before it resumed).
+    const video = videoRef.current
+    if (video && video.paused) {
+      // Genuinely not playing (blocked autoplay, or actually paused) — this
+      // tap is a fresh user gesture, so retry play from right here.
       togglePlay()
       setControlsVisible(true)
       return
@@ -280,7 +287,7 @@ export default function VideoPlayer({
             <button
               onClick={showAirPlayPicker}
               aria-label="AirPlay"
-              className="hidden min-h-11 min-w-11 flex-none items-center justify-center sm:flex"
+              className="flex min-h-11 min-w-11 flex-none items-center justify-center"
             >
               <AirPlayIcon className={ICON_SIZE} />
             </button>
@@ -289,7 +296,7 @@ export default function VideoPlayer({
             <button
               onClick={startCasting}
               aria-label="Cast"
-              className="hidden min-h-11 min-w-11 flex-none items-center justify-center sm:flex"
+              className="flex min-h-11 min-w-11 flex-none items-center justify-center"
             >
               <CastIcon className={ICON_SIZE} />
             </button>

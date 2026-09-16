@@ -1,19 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import primaryLogo from '../../assets/brand/logo-primary.png'
 import { useAuth } from '../../context/AuthContext'
-
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/live', label: 'Live TV' },
-  { to: '/guide', label: 'TV Guide' },
-  { to: '/movies', label: 'Movies' },
-  { to: '/series', label: 'Series' },
-  { to: '/sports', label: 'Sports' },
-  { to: '/news', label: 'News' },
-  { to: '/nigeria', label: 'Nigeria' },
-  { to: '/africa', label: 'Africa' },
-  { to: '/browse', label: 'Browse' },
-]
+import { NAV_LINKS } from '../../lib/navLinks'
 
 export default function TopNav() {
   const { status, user, openLoginModal, logout } = useAuth()
@@ -25,7 +13,7 @@ export default function TopNav() {
           <img src={primaryLogo} alt="ReelBox" className="h-8 w-auto" />
         </Link>
         <nav className="flex flex-1 items-center gap-5 overflow-x-auto text-sm text-muted">
-          {links.map((link) => (
+          {NAV_LINKS.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
