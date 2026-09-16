@@ -1,0 +1,18 @@
+RewriteEngine On
+
+# This repo is a monorepo (frontend/, api/, database/ as siblings). This
+# .htaccess only matters when the *whole repo* lands at a site's document
+# root instead of just the api/ folder (e.g. Hostinger's git-deploy "custom
+# directory" targets a folder and deploys the entire repo into it) — in that
+# case this transparently forwards every request into api/, so the PHP
+# backend still serves correctly with no /api prefix in URLs, exactly as it
+# does when api/ is deployed as the docroot directly.
+
+# Never serve dotfiles (.env, .git, etc.) or the non-API parts of the repo.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+RewriteRule ^(frontend|database)(/|$) - [F,L]
+
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^(.*)$ api/$1 [L]
