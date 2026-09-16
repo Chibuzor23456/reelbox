@@ -9,6 +9,7 @@ frontend/dist/
 .env
 .env.local
 .env.*.local
+.env.production
 api/config/local.php
 
 # Ingestion cache
