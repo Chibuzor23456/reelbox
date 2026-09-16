@@ -1,5 +1,11 @@
 RewriteEngine On
 
+# A URL like /channels or /vod matches a real directory here — without this,
+# Apache's mod_dir auto-redirects it to add a trailing slash before any PHP
+# (and therefore apply_cors()) runs, so the redirect carries no CORS headers
+# and browsers block it cross-origin even though curl doesn't care.
+DirectorySlash Off
+
 # Never serve dotfiles (.env, etc.)
 <FilesMatch "^\.">
     Require all denied

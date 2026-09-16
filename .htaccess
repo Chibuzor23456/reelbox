@@ -1,5 +1,14 @@
 RewriteEngine On
 
+# A URL like /channels or /vod matches a real directory (api/channels/,
+# api/vod/, etc.), so Apache's mod_dir would otherwise auto-redirect it to
+# add a trailing slash — that redirect is generated before any PHP (and
+# therefore before apply_cors()) ever runs, so it carries no CORS headers
+# and browsers silently block it cross-origin, even though curl doesn't
+# care. Turning this off lets those directories serve their index.php
+# directly instead, with CORS headers intact.
+DirectorySlash Off
+
 # This repo is a monorepo (frontend/, api/, database/ as siblings). This
 # .htaccess only matters when the *whole repo* lands at a site's document
 # root instead of just the api/ folder (e.g. Hostinger's git-deploy "custom
