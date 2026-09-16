@@ -11,6 +11,22 @@ require_once __DIR__ . '/../HttpClient.php';
 // is to skip them rather than guess.
 const IA_LICENSE_ALLOWLIST = 'publicdomain';
 
+/** IA item descriptions are frequently raw HTML (<div>, <a href>, <br/> —
+ * often with attribution links back to a source site) — strip that down to
+ * plain text rather than showing markup literally in a synopsis field. */
+function ia_clean_synopsis(?string $raw): ?string
+{
+    if ($raw === null || trim($raw) === '') {
+        return null;
+    }
+
+    $text = html_entity_decode(strip_tags($raw), ENT_QUOTES | ENT_HTML5);
+    $text = preg_replace('/[ \t]+/', ' ', $text);
+    $text = trim(preg_replace('/\n{3,}/', "\n\n", $text));
+
+    return $text !== '' ? $text : null;
+}
+
 function ia_search(string $query, int $rows, array $fields): array
 {
     $qs = http_build_query(['q' => $query, 'rows' => $rows, 'output' => 'json']);
@@ -59,10 +75,11 @@ function ia_resolve_playable(string $identifier): ?array
 
     $title = $metadata['title'] ?? $identifier;
     $description = $metadata['description'] ?? null;
+    $description = is_array($description) ? implode("\n", $description) : $description;
 
     return [
         'title' => is_array($title) ? ($title[0] ?? $identifier) : (string) $title,
-        'synopsis' => is_array($description) ? implode("\n", $description) : $description,
+        'synopsis' => ia_clean_synopsis($description),
         'year' => ia_extract_year($metadata),
         'runtime_minutes' => isset($videoFile['length']) ? (int) round(((float) $videoFile['length']) / 60) : null,
         'playback_url' => 'https://archive.org/download/' . rawurlencode($identifier) . '/' . rawurlencode($videoFile['name']),
